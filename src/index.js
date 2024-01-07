@@ -51,7 +51,7 @@ async function main(){
 
   
   client.addEventHandler(onNewOffer, new NewMessage({chats: [canalOfertasQvapayOficialId]}));  
-  // client.addEventHandler(onNewMsg, new NewMessage({chats: [canalOfertasPersonalizadasId]}));  
+  client.addEventHandler(onNewMsg, new NewMessage({chats: [canalOfertasPersonalizadasId]}));  
 
   async function onNewOffer(event) {
     const {message: text, id: msgId} = event.message;
