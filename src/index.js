@@ -56,7 +56,7 @@ async function main(){
   async function onNewOffer(event) {
     const {message: text, id: msgId} = event.message;
   
-    if(text.inludes('CUP') || text.inludes('MLC')){
+    if(text.includes('CUP') || text.includes('MLC')){
       const ratioRegex = /Ratio: \$([\d.]+)/;
       const tipoOperacionRegex = /#(Compra|Venta)/; // Coincide con #Compra o #Venta
       const monedaRegex = /#(MLC|CUP)/; // Coincide con #MLC o #CUP
