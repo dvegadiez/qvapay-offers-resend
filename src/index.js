@@ -55,43 +55,44 @@ async function main(){
 
   async function onNewOffer(event) {
     const {message: text, id: msgId} = event.message;
-    // console.log(text);
   
-    const ratioRegex = /Ratio: \$([\d.]+)/;
-    const tipoOperacionRegex = /#(Compra|Venta)/; // Coincide con #Compra o #Venta
-    const monedaRegex = /#(MLC|CUP)/; // Coincide con #MLC o #CUP
+    if(text.inludes('CUP') || text.inludes('MLC')){
+      const ratioRegex = /Ratio: \$([\d.]+)/;
+      const tipoOperacionRegex = /#(Compra|Venta)/; // Coincide con #Compra o #Venta
+      const monedaRegex = /#(MLC|CUP)/; // Coincide con #MLC o #CUP
+    
+      const ratio = parseFloat(text.match(ratioRegex)[1]);
+      const tipoOperacion = text.match(tipoOperacionRegex)[1];
+      const moneda = text.match(monedaRegex)[1];
+    
+      const umbrales = await obtenerUmbralesPorMoneda(moneda)
+      const umbralPorMoneda = umbrales[String(tipoOperacion).toLowerCase()];
+    
+      const esOfertaInteresante = (tipoOperacion, ratio, umbral) => {
+          if (tipoOperacion === 'Venta' && umbral && ratio <= umbral) {
+              return true;
+          }
+          
+          if (tipoOperacion === 'Compra' && umbral && ratio >= umbral) {
+              return true;
+          }
+    
+          return false;
+      }
+    
+      console.log({tipoOperacion, moneda, ratio, umbralPorMoneda});
+      console.log({ofertaInteresante: esOfertaInteresante(tipoOperacion, ratio, umbralPorMoneda)});
   
-    const ratio = parseFloat(text.match(ratioRegex)[1]);
-    const tipoOperacion = text.match(tipoOperacionRegex)[1];
-    const moneda = text.match(monedaRegex)[1];
-  
-    const umbrales = await obtenerUmbralesPorMoneda(moneda)
-    const umbralPorMoneda = umbrales[String(tipoOperacion).toLowerCase()];
-  
-    const esOfertaInteresante = (tipoOperacion, ratio, umbral) => {
-        if (tipoOperacion === 'Venta' && umbral && ratio <= umbral) {
-            return true;
-        }
-        
-        if (tipoOperacion === 'Compra' && umbral && ratio >= umbral) {
-            return true;
-        }
-  
-        return false;
-    }
-  
-    console.log({tipoOperacion, moneda, ratio, umbralPorMoneda});
-    console.log({ofertaInteresante: esOfertaInteresante(tipoOperacion, ratio, umbralPorMoneda)});
+      if(esOfertaInteresante(tipoOperacion, ratio, umbralPorMoneda)){
+          await client.forwardMessages(canalOfertasPersonalizadasId, {fromPeer: canalOfertasQvapayOficialId, messages: msgId });
+    
+      }
 
-    if(esOfertaInteresante(tipoOperacion, ratio, umbralPorMoneda)){
-        await client.forwardMessages(canalOfertasPersonalizadasId, {fromPeer: canalOfertasQvapayOficialId, messages: msgId });
-  
     }
     
   }
 
   async function onNewMsg(event){
-    console.log(event);
     const {message: text, id: msgId} = event.message;
 
     const esMensajeConfiguracionValido = (msg) => {
