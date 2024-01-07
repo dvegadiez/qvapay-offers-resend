@@ -84,7 +84,7 @@ async function main(){
       console.log({ofertaInteresante: esOfertaInteresante(tipoOperacion, ratio, umbralPorMoneda)});
   
       if(esOfertaInteresante(tipoOperacion, ratio, umbralPorMoneda)){
-          await client.forwardMessages(`-100${canalOfertasPersonalizadasId}`, {fromPeer: canalOfertasQvapayOficialId, messages: msgId });
+          await client.forwardMessages(canalOfertasPersonalizadasId, {fromPeer: `-100${canalOfertasQvapayOficialId}`, messages: msgId });
     
       }
 
